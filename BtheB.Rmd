@@ -1,0 +1,59 @@
+BtheB (Beat the Blues [optimistic and upbeat name for depression data!]) Homework
+========================================================
+Steele, Bin, & Arvind
+---
+### Preliminary Code
+First, let's be sure to load the appropriate package (HSAUR2) as well as the data (BtheB). And let us not forget to load our wonderful graphics package (ggplot2). 
+```{r}
+data("BtheB", package = "HSAUR2")
+attach(BtheB)
+library(ggplot2)
+```
+### Description of Data
+Let's get a 'feel' for the data. What does it look like and what are some of the variables we are working with? 
+```{r}
+head(BtheB)
+tail(BtheB)
+```
+There are 100 patients. Also, We see that we have three binary variables; **drug**, **length**, and **treatment**. They account for use of anti-depressant drugs, length of depression (in months), and the treatment group each patient was assigned to (TAU=Treatment As Usual, BtheB=Beat the Blues).  
+
+As for the remaining 5 variables, **bdi.pre**, **bdi.2m**, **bdi.3m**, **bdi.5m**, and **bdi.8m**, they represent recordings of the Beck Depression Inventory II before treatment, after two months, after one month follow-up, after three months follow-up, and after six months follow-up, respectively. This tool indicates the higher the rating, the more severe depressive symptoms are (grammar?).  It should also be noted that there is missing data for some of the patients, which is not explained in the R documentation, but could be due to the fact that the patients could not be reached or had dropped out of the study. 
+
+### Initial Choice of Variables
+Without putting much thought into it, we chose to analyze **bdi.pre** and **bdi.2m**, plotting them against one another. Here are our following results:
+```{r}
+m1 <- lm(bdi.pre~bdi.2m)
+m1$coefficients
+```
+If we were to try to make sense of the intercept and **bdi.2m**, we would interpret that as their initial rating is recorded, there is a positive increase when their rating is recorded again, 2 months later. 
+
+Let us take a look at a plot.
+```{r fig.width=7, fig.height=6}
+qplot(bdi.2m, bdi.pre, geom="point")+ggtitle("An Odd Analysis")
+```
+Quite honestly, we have no idea if this interpretation is correct.
+
+### Missing Data
+Throughout the data, missing values are present. For our analyses (if you can call it that), our two variables, **bdi.pre** and **bdi.2m**, are not severely affected as there are no missing values for the former variable but only 3 missing values for the latter variable. 
+
+Interestingly enough, if our analyses included **treatment** and we wanted to examine **bdi.8m**, a warning message indicates there are 48 missing values as such.
+```{r fig.height=7, fig.width=6}
+qplot(treatment, bdi.8m, geom="boxplot", na.rm=F)
+```
+From this basic boxplot analysis, one would conclude that after 8 months, the treatment group, *BtheB*, would have a significantly lower mean rating than the treatment group, *TAU*, but this would not be accurate as 48 values are missing from the analysis. 
+
+### Simple Linear/Logistic Regression
+
+```{r}
+m2 <- glm(treatment~bdi.2m, family=binomial(link="logit"))
+summary(m2)
+```
+
+```{r fig.height=7, fig.width=6}
+qplot(bdi.2m, as.numeric(treatment)-1) + stat_smooth(method="glm", family="binomial")
+```
+
+
+
+
+
