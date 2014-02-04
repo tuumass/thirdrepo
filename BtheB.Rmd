@@ -1,14 +1,16 @@
-BtheB (Beat the Blues [optimistic and upbeat name for depression data!]) Homework
+BtheB Homework
+(Beat the Blues [an optimistic and upbeat name for depression data!]) 
 ========================================================
 Steele, Bin, & Arvind
 ---
-### Preliminary Code
+### Preliminary Codes
 First, let's be sure to load the appropriate package (HSAUR2) as well as the data (BtheB). And let us not forget to load our wonderful graphics package (ggplot2). 
 ```{r}
 data("BtheB", package = "HSAUR2")
 attach(BtheB)
 library(ggplot2)
 ```
+Good job!
 ### Description of Data
 Let's get a 'feel' for the data. What does it look like and what are some of the variables we are working with? 
 ```{r}
@@ -29,7 +31,7 @@ If we were to try to make sense of the intercept and **bdi.2m**, we would interp
 
 Let us take a look at a plot.
 ```{r fig.width=7, fig.height=6}
-qplot(bdi.2m, bdi.pre, geom="point")+ggtitle("An Odd Analysis")
+qplot(bdi.2m, bdi.pre, geom="point")+ggtitle("BDI of 2 months vs pre treatment")
 ```
 Quite honestly, we have no idea if this interpretation is correct.
 
@@ -40,19 +42,24 @@ Interestingly enough, if our analyses included **treatment** and we wanted to ex
 ```{r fig.height=7, fig.width=6}
 qplot(treatment, bdi.8m, geom="boxplot", na.rm=F)
 ```
-From this basic boxplot analysis, one would conclude that after 8 months, the treatment group, *BtheB*, would have a significantly lower mean rating than the treatment group, *TAU*, but this would not be accurate as 48 values are missing from the analysis. 
+From this basic boxplot analysis, one would conclude that after 8 months, the treatment group, *BtheB*, would have a significantly lower mean rating than the treatment group, *TAU*, but this would not be entirely accurate as 48 values are missing from the analysis. 
 
-### Simple Linear/Logistic Regression
+### Simple Linear/Logistic Regression (SLR)
+Let us run a simple model of BDI after 2 months against the two treatment groups. Similar to a simple linear regression model, a logistic regression model is where we have a binary dependent variable (yes or no, etc.). 
+
+In terms of syntax, rather than the `lm` function, we use `glm`, which stands for generalized linear model. Additionally, we add the argument `family=binomial(link="logit")`. 
 
 ```{r}
 m2 <- glm(treatment~bdi.2m, family=binomial(link="logit"))
-summary(m2)
+m2$coefficients
 ```
+We interpret this analysis that as the rating of BDI at 2 months increases by one unit, then there is a decrease of .043 for those in the 'Beat the Blues' treatment group. 
 
+Let us plot a logistic regression in order to see a complete picture.
 ```{r fig.height=7, fig.width=6}
 qplot(bdi.2m, as.numeric(treatment)-1) + stat_smooth(method="glm", family="binomial")
 ```
-
+And the plot confirms the model...(I don't know what else to say?)
 
 
 
